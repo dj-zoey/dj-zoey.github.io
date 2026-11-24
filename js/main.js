@@ -1,7 +1,8 @@
 /* ===== CONFIG — change here ===== */
 const CONFIG = {
   // Booking requests go to this address (assembled in JS to reduce spam bots).
-  email: ["babyzhouzz", "gmail.com"].join("@"),
+  // Booking email, stored encoded so simple spam bots can't read it from the source.
+  emailEnc: "bW9jLmxpYW1nQHp6dW9oenliYWI=",
   // Optional: a form service endpoint (e.g. Formspree / Web3Forms). Leave empty to use the email app.
   formEndpoint: "",
   // Optional: Zoey's WeChat ID, shown after a request so people can add her. Leave empty to hide.
@@ -48,8 +49,17 @@ const CONFIG = {
   $$(".nav__links a").forEach((a) => a.addEventListener("click", () => { nav.classList.remove("is-open"); burger.setAttribute("aria-expanded", "false"); }));
 
   /* ---------- Email links ---------- */
-  $$(".mail-link, .mail-link-card").forEach((a) => { a.href = "mailto:" + CONFIG.email; });
-  $$(".mail-link, .mail-text").forEach((el) => { el.textContent = CONFIG.email; });
+  // Email is decoded only when a visitor taps it (bots reading the page don't see it).
+  const getEmail = () => { try { return atob(CONFIG.emailEnc).split("").reverse().join(""); } catch (e) { return ""; } };
+  $$(".js-mail").forEach((a) => {
+    a.addEventListener("click", () => {
+      const em = getEmail();
+      a.href = "mailto:" + em;
+      const label = a.classList.contains("mail-link-card") ? $(".mail-text", a) : a;
+      label.removeAttribute("data-i18n");
+      label.textContent = em;
+    });
+  });
   $("#year").textContent = new Date().getFullYear();
 
   /* ---------- Background music playlist ---------- */
@@ -281,7 +291,7 @@ const CONFIG = {
     if (v) { err.textContent = v.msg; err.hidden = false; v.el && v.el.focus(); return; }
     err.hidden = true;
     const body = buildMessage(), subj = subject();
-    const mailto = "mailto:" + CONFIG.email + "?subject=" + encodeURIComponent(subj) + "&body=" + encodeURIComponent(body);
+    const mailto = "mailto:" + getEmail() + "?subject=" + encodeURIComponent(subj) + "&body=" + encodeURIComponent(body);
 
     if (CONFIG.formEndpoint) {
       try {

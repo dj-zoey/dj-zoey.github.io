@@ -98,7 +98,8 @@ html.intro-on{overflow:hidden}
 .intro__enter{font:700 15px/1 "Helvetica Neue",Arial,"PingFang SC",sans-serif;letter-spacing:.22em;color:#000;background:var(--accent);border:0;border-radius:999px;padding:16px 34px;cursor:pointer;
   box-shadow:0 0 0 0 rgba(255,65,54,.6);animation:enterpulse calc(var(--beat,.49s)*2) ease-out infinite}
 .intro__enter span{letter-spacing:.1em}
-.intro__enter:hover,.intro__enter:focus-visible{background:#fff;outline:none}
+.intro__enter:hover{background:#fff}
+.intro__enter:focus-visible{outline:2px solid #fff;outline-offset:4px}
 @keyframes enterpulse{0%{box-shadow:0 0 0 0 rgba(255,65,54,.6)}100%{box-shadow:0 0 0 18px rgba(255,65,54,0)}}
 .intro__mute{background:none;border:0;color:#a09b94;font:500 12px/1.4 "Helvetica Neue",Arial,"PingFang SC",sans-serif;letter-spacing:.06em;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:6px}
 .intro__mute:hover{color:#fff}

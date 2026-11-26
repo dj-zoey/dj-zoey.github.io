@@ -202,29 +202,10 @@ const CONFIG = {
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches || saveData) { hv.removeAttribute("autoplay"); hv.pause(); }
   else { const p = hv.play(); if (p && p.catch) p.catch(() => {}); }
 
-  /* ---------- Lightbox ---------- */
-  const items = $$(".gallery a");
-  const lb = $("#lightbox"), lbImg = $("img", lb);
-  let lbIdx = 0;
-  const show = (i) => { lbIdx = (i + items.length) % items.length; lbImg.src = items[lbIdx].href; lbImg.alt = $("img", items[lbIdx]).alt; };
-  items.forEach((a, i) => a.addEventListener("click", (e) => { e.preventDefault(); show(i); lb.hidden = false; document.body.style.overflow = "hidden"; $(".lightbox__close").focus(); }));
-  const close = () => { lb.hidden = true; document.body.style.overflow = ""; items[lbIdx].focus(); };
-  $(".lightbox__close").addEventListener("click", close);
-  $(".lightbox__prev").addEventListener("click", () => show(lbIdx - 1));
-  $(".lightbox__next").addEventListener("click", () => show(lbIdx + 1));
-  lb.addEventListener("click", (e) => { if (e.target === lb) close(); });
-  document.addEventListener("keydown", (e) => {
-    if (lb.hidden) return;
-    if (e.key === "Escape") close(); if (e.key === "ArrowRight") show(lbIdx + 1); if (e.key === "ArrowLeft") show(lbIdx - 1);
-  });
-  let tx = 0;
-  lb.addEventListener("touchstart", (e) => { tx = e.touches[0].clientX; }, { passive: true });
-  lb.addEventListener("touchend", (e) => { const d = e.changedTouches[0].clientX - tx; if (Math.abs(d) > 50) show(lbIdx + (d < 0 ? 1 : -1)); });
-
   /* ---------- Reveal on scroll ---------- */
   if ("IntersectionObserver" in window) {
     const io = new IntersectionObserver((es) => es.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("is-in"); io.unobserve(en.target); } }), { threshold: 0.12 });
-    $$(".section__head, .track, .video, .g, .about__img, .about__text, fieldset, .social__grid a").forEach((el) => { el.classList.add("reveal"); io.observe(el); });
+    $$(".section__head, .track, .video, .about__img, .about__text, fieldset, .social__grid a").forEach((el) => { el.classList.add("reveal"); io.observe(el); });
   }
 
   /* ---------- Booking form ---------- */

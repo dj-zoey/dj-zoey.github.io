@@ -311,14 +311,12 @@
     })();
   }
 
-  /* ================= 9. INTRO (first visit only) ================= */
+  /* ================= 9. INTRO (every visit; skipped with “reduce motion”, click skips) ================= */
   const intro = $("#intro");
   if (intro) {
-    const forceIntro = /[?&]intro\b/.test(location.search);
-    if (!forceIntro && (reduce || store.get("zoey-intro"))) intro.remove();
+    if (reduce) intro.remove();
     else {
       root.classList.add("intro-on");
-      store.set("zoey-intro", "1");
       const bars = $(".intro__wave", intro);
       for (let i = 0; i < 48; i++) {
         const b = document.createElement("i");

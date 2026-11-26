@@ -30,6 +30,7 @@ const CONFIG = {
     document.title = lang === "zh" ? "DJ ZOEY — House · Deep · Groove | 深圳" : "DJ ZOEY — House · Deep · Groove | Shenzhen";
     store.set("lang", lang);
     if (window.__applyPlayerLang) window.__applyPlayerLang();
+    (window.__afterLang || []).forEach((f) => { try { f(lang); } catch (e) {} });
   }
   const urlLang = new URLSearchParams(location.search).get("lang");
   const saved = store.get("lang");
@@ -67,6 +68,8 @@ const CONFIG = {
   const cards = $$(".track");
   const list = cards.map((c) => ({ src: c.dataset.src, title: $("h3", c).textContent, cover: ($(".track__cover", c) || {}).src || "" }));
   const player = new Audio();
+  window.__zoeyPlayer = player;
+  let special = false;
   player.preload = "auto";
   player.volume = 0.8;
   const mini = $("#mini");
@@ -74,6 +77,7 @@ const CONFIG = {
   let idx = 0, waitingForGesture = false, resumeAfterVideo = false;
 
   function load(i) {
+    special = false;
     idx = (i + list.length) % list.length;
     player.src = list[idx].src;
     $(".mini__title", mini).textContent = list[idx].title;
@@ -103,7 +107,7 @@ const CONFIG = {
     $(".mini__state", mini).textContent = on ? t("player.now") : (waitingForGesture ? t("player.tap") : t("player.paused"));
     $(".mini__toggle", mini).setAttribute("aria-label", on ? "Pause" : "Play");
     cards.forEach((c, k) => {
-      const isOn = on && k === idx;
+      const isOn = on && k === idx && !special;
       c.classList.toggle("is-playing", isOn);
       $(".track__play", c).setAttribute("aria-label", isOn ? "Pause" : "Play");
     });
@@ -113,7 +117,10 @@ const CONFIG = {
   player.addEventListener("pause", syncUI);
   player.addEventListener("ended", next);
   player.addEventListener("timeupdate", () => {
-    const c = cards[idx]; if (!c) return;
+    const c = special ? null : cards[idx];
+    const pctAll = player.duration ? (player.currentTime / player.duration) * 100 : 0;
+    $(".mini__bar span", mini).style.width = pctAll + "%";
+    if (!c) return;
     const pct = player.duration ? (player.currentTime / player.duration) * 100 : 0;
     $(".track__bar span", c).style.width = pct + "%";
     $(".track__bar", c).setAttribute("aria-valuenow", Math.round(pct));
@@ -189,6 +196,16 @@ const CONFIG = {
 
   load(0);
   window.__applyPlayerLang = syncUI;
+  // V2: play a track that isn't in the playlist (cat easter egg)
+  window.__zoeyPlaySpecial = (src, title, cover) => {
+    special = true;
+    player.src = src;
+    $(".mini__title", mini).textContent = title;
+    if (cover) $(".mini__cover", mini).src = cover;
+    cards.forEach((c) => { c.classList.remove("is-current", "is-playing"); $(".track__bar span", c).style.width = "0%"; $(".track__time", c).textContent = "1:30"; });
+    store.set("music", "on"); disarmGesture(); videos.forEach((v) => { if (!v.paused) v.pause(); });
+    play();
+  };
   if (store.get("music") === "off") { syncUI(); }
   else {
     play();

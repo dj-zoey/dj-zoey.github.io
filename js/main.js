@@ -222,7 +222,7 @@ const CONFIG = {
   /* ---------- Reveal on scroll ---------- */
   if ("IntersectionObserver" in window) {
     const io = new IntersectionObserver((es) => es.forEach((en) => { if (en.isIntersecting) { en.target.classList.add("is-in"); io.unobserve(en.target); } }), { threshold: 0.12 });
-    $$(".section__head, .track, .video, .about__img, .about__text, fieldset, .social__grid a").forEach((el) => { el.classList.add("reveal"); io.observe(el); });
+    $$(".section__head, .track, .video, .about__img, .about__text, fieldset, .social__grid > *").forEach((el) => { el.classList.add("reveal"); io.observe(el); });
   }
 
   /* ---------- Booking form ---------- */

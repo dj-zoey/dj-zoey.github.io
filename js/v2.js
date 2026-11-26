@@ -274,9 +274,20 @@
   } else heads.forEach((h) => h.classList.add("ink"));
 
   /* ================= 7. BEAT-SYNCED REVEALS ================= */
-  // stagger groups on the half-beat grid
-  [".tracks .track", ".videos .video", ".social__grid > *", ".facts li"].forEach((sel) => {
-    $$(sel).forEach((el, i) => { el.style.transitionDelay = ((i % 6) * BEAT / 2).toFixed(3) + "s"; });
+  // stagger groups on the half-beat grid — only for the first fade-in.
+  // Afterwards the delay is removed so hover effects react instantly.
+  [".tracks .track", ".videos .video", ".social__grid > *"].forEach((sel) => {
+    $$(sel).forEach((el, i) => {
+      const d = (i % 6) * BEAT / 2;
+      if (!d || !el.classList.contains("reveal") || el.classList.contains("is-in")) return;
+      el.style.transitionDelay = d.toFixed(3) + "s";
+      const mo = new MutationObserver(() => {
+        if (!el.classList.contains("is-in")) return;
+        mo.disconnect();
+        setTimeout(() => { el.style.transitionDelay = ""; }, (d + BEAT * 2) * 1000 + 60);
+      });
+      mo.observe(el, { attributes: true, attributeFilter: ["class"] });
+    });
   });
 
   /* ================= 8. VINYL CURSOR (desktop) ================= */

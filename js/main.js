@@ -166,7 +166,7 @@ const CONFIG = {
   }
 
   // Browsers only allow sound after the visitor's first tap/click/key → start then.
-  const SKIP = "video, .track, .mini, input, select, textarea, label, .lang, .intro__mute";
+  const SKIP = "video, .track, .mini, input, select, textarea, label, .lang";
   function onGesture(e) {
     if (e.target && e.target.closest && e.target.closest(SKIP)) return;
     disarmGesture(); play();
@@ -196,10 +196,6 @@ const CONFIG = {
 
   load(0);
   window.__applyPlayerLang = syncUI;
-  // V2: intro "ENTER" button starts the music with a real tap
-  window.__zoeyStart = userPlay;
-  window.__zoeyStayQuiet = () => { disarmGesture(); }; // "enter without sound": no surprise start on the next tap
-  window.__zoeyWantsMusic = () => store.get("music") !== "off";
   // V2: play a track that isn't in the playlist (cat easter egg)
   window.__zoeyPlaySpecial = (src, title, cover) => {
     special = true;

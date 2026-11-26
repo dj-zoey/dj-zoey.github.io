@@ -329,32 +329,10 @@
         if (closed) return; closed = true;
         root.classList.remove("intro-on"); intro.classList.add("out"); setTimeout(() => intro.remove(), 350);
       };
-      // Browsers block sound until the first tap. If the music couldn't start on its own,
-      // the intro ends on an ENTER button instead of closing — one tap starts music + visuals.
-      const enter = () => { connectAudio(); if (window.__zoeyStart) window.__zoeyStart(); done(); };
-      function showEnter() {
-        intro.classList.add("enter");
-        const box = document.createElement("div");
-        box.className = "intro__actions";
-        box.innerHTML = '<button type="button" class="intro__enter">▶ ENTER <span>· 进入</span></button>' +
-          '<button type="button" class="intro__mute">Enter without sound · 静音进入</button>';
-        $(".intro__screen", intro).appendChild(box);
-        $(".intro__enter", box).focus({ preventScroll: true });
-        $(".intro__mute", box).addEventListener("click", (e) => { e.stopPropagation(); if (window.__zoeyStayQuiet) window.__zoeyStayQuiet(); done(); });
-      }
-      const tm = setTimeout(() => {
-        const blocked = player.paused && (!window.__zoeyWantsMusic || window.__zoeyWantsMusic());
-        if (blocked) showEnter(); else done();
-      }, 1150);
-      intro.addEventListener("click", (e) => {
-        if (e.target.closest(".intro__mute")) return;
-        clearTimeout(tm);
-        if (intro.classList.contains("enter")) enter(); else done();
-      });
-      document.addEventListener("keydown", (e) => {
-        if (closed || !intro.classList.contains("enter")) return;
-        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); enter(); }
-      });
+      // Always opens the page by itself after 1.15 s (a click skips it). Music behaves as usual:
+      // it starts if the browser allows it, otherwise on the first tap or via the play button.
+      const tm = setTimeout(done, 1150);
+      intro.addEventListener("click", () => { clearTimeout(tm); done(); });
     }
   }
 })();

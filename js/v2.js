@@ -324,8 +324,8 @@
         b.style.setProperty("--i", i);
         bars.appendChild(b);
       }
-      const done = () => { root.classList.remove("intro-on"); intro.classList.add("out"); setTimeout(() => intro.remove(), 700); };
-      const tm = setTimeout(done, 2300);
+      const done = () => { root.classList.remove("intro-on"); intro.classList.add("out"); setTimeout(() => intro.remove(), 350); };
+      const tm = setTimeout(done, 1150);
       intro.addEventListener("click", () => { clearTimeout(tm); done(); });
     }
   }
